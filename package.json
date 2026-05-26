@@ -1,0 +1,22 @@
+{
+  "name": "simulatore-orari-babilonesi",
+  "version": "1.0.0",
+  "description": "Simulatore interattivo di orologi solari e meridiane storiche in tempo reale.",
+  "main": "index.html",
+  "scripts": {
+    "dev": "http-server ./ -p 5173 -o",
+    "start": "http-server ./ -p 5173 -o"
+  },
+  "keywords": [
+    "sundial",
+    "gnomonics",
+    "italica",
+    "babylonian",
+    "temporary"
+  ],
+  "author": "KRONOS",
+  "license": "ISC",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

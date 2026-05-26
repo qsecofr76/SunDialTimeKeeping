@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KRONOS | Meridiane Storiche & Orologi Solari</title>
+    <meta name="description" content="Simulatore interattivo avanzato di orologi solari e meridiane storiche: Francesi, Italiche, Babilonesi, Temporarie e Orizzontali a pavimentazione con calcolo in tempo reale.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css?v=2.4">
+</head>
+<body>
+    <div class="bg-glow"></div>
+    
+    <header class="app-header">
+        <div class="header-logo">
+            <i data-lucide="sun" class="sun-icon"></i>
+            <div class="logo-text">
+                <h1>KRONOS</h1>
+                <span>SIMULATORE DI GNOMONICA E ORE STORICHE</span>
+            </div>
+        </div>
+        <p class="header-desc">
+            Misura il tempo con la luce del sole. Confronta l'ora civile moderna con le meridiane storiche a parete (Italica, Babilonese, Temporaria) e una meridiana monumentale orizzontale a pavimento con gnomone umano e ombra dinamica.
+        </p>
+    </header>
+
+    <!-- MAIN APP GRID: 2x2 Layout for the first 4 quadrants -->
+    <main class="app-grid">
+        <!-- QUADRANTE 1: CONTROLLI E OROLOGIO MECCANICO FRANCESE -->
+        <section class="card control-card" id="quadrant-1">
+            <div class="card-glow" style="--accent: var(--color-french)"></div>
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="badge badge-french">Pannello Controllo</span>
+                    <h2>Ora Civile & Parametri</h2>
+                </div>
+                <i data-lucide="sliders" class="header-icon icon-french"></i>
+            </div>
+            
+            <div class="card-content">
+                <!-- PRESET LOCALITÀ -->
+                <div class="form-group">
+                    <label><i data-lucide="map-pin"></i> Località Predefinita</label>
+                    <div class="preset-buttons">
+                        <button class="btn btn-preset active" data-lat="45.6669" data-lng="12.2431" data-name="Treviso">Treviso</button>
+                        <button class="btn btn-preset" data-lat="45.4642" data-lng="9.1900" data-name="Milano">Milano</button>
+                        <button class="btn btn-preset" data-lat="41.9028" data-lng="12.4964" data-name="Roma">Roma</button>
+                        <button class="btn btn-preset" data-lat="40.8518" data-lng="14.2681" data-name="Napoli">Napoli</button>
+                        <button class="btn btn-preset" id="btn-custom">Personalizzata</button>
+                    </div>
+                </div>
+
+                <!-- COORDINATE E ORIENTAMENTO -->
+                <div class="control-grid">
+                    <div class="form-group">
+                        <div class="slider-header">
+                            <label>Latitudine (&phi;)</label>
+                            <span class="value-display" id="lat-val">45.7° N</span>
+                        </div>
+                        <input type="range" id="input-lat" min="10" max="70" step="0.1" value="45.7" class="slider">
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="slider-header">
+                            <label>Longitudine (&lambda;)</label>
+                            <span class="value-display" id="lng-val">12.2° E</span>
+                        </div>
+                        <input type="range" id="input-lng" min="-30" max="60" step="0.1" value="12.2" class="slider">
+                    </div>
+                    
+                    <div class="form-group full-width" id="gps-btn-container" style="display: none; margin-bottom: 0.25rem;">
+                        <button class="btn-gps" id="btn-gps" type="button">
+                            <i data-lucide="locate" class="inline-icon" style="width: 15px; height: 15px;"></i> Rileva Posizione GPS
+                        </button>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <div class="slider-header">
+                            <label>Declinazione Muro (D) <span class="help-text">(-90° Est, 0° Sud, +90° Ovest)</span></label>
+                            <span class="value-display" id="dec-val">0.0° (Sud Diretto)</span>
+                        </div>
+                        <input type="range" id="input-dec" min="-90" max="90" step="1" value="0" class="slider">
+                        <div class="dec-preset-buttons">
+                            <button class="btn btn-dec-preset" data-dec="-90">Parete a Est (-90°)</button>
+                            <button class="btn btn-dec-preset active" data-dec="0" id="btn-dec-south">Parete a Sud (0°)</button>
+                            <button class="btn btn-dec-preset" data-dec="90">Parete a Ovest (+90°)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- CONTROLLI TEMPORALI -->
+                <div class="time-control-grid">
+                    <div class="form-group">
+                        <label for="input-date"><i data-lucide="calendar"></i> Data</label>
+                        <input type="date" id="input-date" value="2026-05-26">
+                    </div>
+                    <div class="form-group">
+                        <label for="input-time"><i data-lucide="clock"></i> Ora Civile Locale</label>
+                        <input type="time" id="input-time" value="12:00">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="input-dst" checked>
+                            <span class="checkmark"></span>
+                            Ora Legale (DST) (+1h)
+                        </label>
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="input-animate">
+                            <span class="checkmark"></span>
+                            Anima Tempo <i data-lucide="play" class="play-icon inline-icon"></i>
+                        </label>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- OROLOGIO FRANCESE & DATI SOLARI -->
+                <div class="clock-telemetry-container">
+                    <div class="mechanical-clock-wrapper">
+                        <div class="analog-clock" id="french-clock">
+                            <div class="clock-face">
+                                <div class="hand hour-hand" id="french-hour"></div>
+                                <div class="hand minute-hand" id="french-min"></div>
+                                <div class="hand second-hand" id="french-sec"></div>
+                                <div class="center-nut"></div>
+                                <div class="clock-number" style="--i:1">I</div>
+                                <div class="clock-number" style="--i:2">II</div>
+                                <div class="clock-number" style="--i:3">III</div>
+                                <div class="clock-number" style="--i:4">IV</div>
+                                <div class="clock-number" style="--i:5">V</div>
+                                <div class="clock-number" style="--i:6">VI</div>
+                                <div class="clock-number" style="--i:7">VII</div>
+                                <div class="clock-number" style="--i:8">VIII</div>
+                                <div class="clock-number" style="--i:9">IX</div>
+                                <div class="clock-number" style="--i:10">X</div>
+                                <div class="clock-number" style="--i:11">XI</div>
+                                <div class="clock-number" style="--i:12">XII</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="solar-telemetry">
+                        <h3>Dati Astronomici</h3>
+                        <div class="telemetry-grid">
+                            <div class="telemetry-item">
+                                <span class="tel-label">Ora Apparente Solare</span>
+                                <span class="tel-val text-french" id="solar-time-val">11:45:12</span>
+                            </div>
+                            <div class="telemetry-item">
+                                <span class="tel-label">Altezza Sole</span>
+                                <span class="tel-val" id="solar-alt-val">65.2°</span>
+                            </div>
+                            <div class="telemetry-item">
+                                <span class="tel-label">Declinazione Sole</span>
+                                <span class="tel-val" id="solar-dec-val">+21.3°</span>
+                            </div>
+                            <div class="telemetry-item">
+                                <span class="tel-label">Azimut Sole</span>
+                                <span class="tel-val" id="solar-azi-val">175.2° (S)</span>
+                            </div>
+                            <div class="telemetry-item">
+                                <span class="tel-label">Alba / Tramonto Civili</span>
+                                <span class="tel-val" id="sun-rise-set-val">05:42 / 20:15</span>
+                            </div>
+                            <div class="telemetry-item">
+                                <span class="tel-label">Equazione del Tempo</span>
+                                <span class="tel-val" id="eot-val">-3m 24s</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr class="divider">
+                <!-- WIDGET CORREZIONE TEMPO (Piccolo box informativo) -->
+                <div class="analemma-container" style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.02); padding: 0.6rem; border-radius: 8px; text-align: center; margin-top: 0.5rem;">
+                    <span id="analemma-desc" style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-secondary);">Correzione: -3m 24s (Sole in ritardo)</span>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- QUADRANTE 2: MERIDIANA ORA ITALICA -->
+        <section class="card dial-card" id="quadrant-2">
+            <div class="card-glow" style="--accent: var(--color-italic)"></div>
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="badge badge-italic">Quadrante II</span>
+                    <h2>Ora Italica (da Tramonto)</h2>
+                </div>
+                <i data-lucide="compass" class="header-icon icon-italic"></i>
+            </div>
+            
+            <div class="card-content">
+                <div class="dial-container">
+                    <svg id="svg-italic" viewBox="-200 -180 400 400" preserveAspectRatio="xMidYMid meet" class="sundial-svg"></svg>
+                    <div class="shadow-overlay-message" id="italic-shadow-msg">Sole dietro la parete</div>
+                </div>
+                
+                <div class="dial-info-panel">
+                    <div class="info-stat">
+                        <span class="info-label">Ora Italica Corrente</span>
+                        <span class="info-value text-italic" id="italic-time-val">17.2 ore (Ore 17)</span>
+                    </div>
+                    <p class="dial-historical-notes">
+                        L'<strong>Ora Italica</strong> suddivide il giorno in 24 ore uguali a partire dal <strong>tramonto</strong> (Ora 24). Molto diffusa in Italia dal XIV secolo. Indica esattamente quante ore mancano al tramonto della giornata.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- QUADRANTE 3: MERIDIANA ORA BABILONESE -->
+        <section class="card dial-card" id="quadrant-3">
+            <div class="card-glow" style="--accent: var(--color-babylonian)"></div>
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="badge badge-babylonian">Quadrante III</span>
+                    <h2>Ora Babilonese (da Alba)</h2>
+                </div>
+                <i data-lucide="sun-dim" class="header-icon icon-babylonian"></i>
+            </div>
+            
+            <div class="card-content">
+                <div class="dial-container">
+                    <svg id="svg-babylonian" viewBox="-200 -180 400 400" preserveAspectRatio="xMidYMid meet" class="sundial-svg"></svg>
+                    <div class="shadow-overlay-message" id="babylonian-shadow-msg">Sole dietro la parete</div>
+                </div>
+                
+                <div class="dial-info-panel">
+                    <div class="info-stat">
+                        <span class="info-label">Ora Babilonese Corrente</span>
+                        <span class="info-value text-babylonian" id="babylonian-time-val">6.8 ore (Ore 6)</span>
+                    </div>
+                    <p class="dial-historical-notes">
+                        L'<strong>Ora Babilonese</strong> suddivide il giorno in 24 ore uguali a partire dall'<strong>alba</strong> (Ora 0). Utilizzata in Mesopotamia. Indica le ore di luce trascorse dall'alba.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- QUADRANTE 4: MERIDIANA ORE TEMPORARIE -->
+        <section class="card dial-card" id="quadrant-4">
+            <div class="card-glow" style="--accent: var(--color-temporary)"></div>
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="badge badge-temporary">Quadrante IV</span>
+                    <h2>Ore Temporarie (Disuguali)</h2>
+                </div>
+                <i data-lucide="orbit" class="header-icon icon-temporary"></i>
+            </div>
+            
+            <div class="card-content">
+                <div class="dial-container">
+                    <svg id="svg-temporary" viewBox="-200 -180 400 400" preserveAspectRatio="xMidYMid meet" class="sundial-svg"></svg>
+                    <div class="shadow-overlay-message" id="temporary-shadow-msg">Sole dietro la parete</div>
+                </div>
+                
+                <div class="dial-info-panel">
+                    <div class="info-stat">
+                        <span class="info-label">Ora Temporaria Corrente</span>
+                        <span class="info-value text-temporary" id="temporary-time-val">Ora VI (Sesta - Mezzodì)</span>
+                    </div>
+                    <p class="dial-historical-notes">
+                        Le <strong>Ore Temporarie</strong> dividono il periodo di luce in <strong>12 ore uguali</strong> e la notte in altre 12. La lunghezza dell'ora varia con le stagioni. L'ora VI corrisponde sempre al mezzogiorno solare.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- STANDALONE SECTION FOR THE 5TH QUANTUM (HORIZONTAL PLAZA DIAL) -->
+    <div class="full-width-container">
+        <section class="card card-full-width" id="quadrant-5">
+            <div class="card-glow" style="--accent: var(--color-french)"></div>
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="badge badge-french">Quadrante V</span>
+                    <h2>Piazza Solare (Meridiana Analemmatica)</h2>
+                </div>
+                <i data-lucide="sun" class="header-icon icon-french"></i>
+            </div>
+            
+            <div class="card-content-horizontal">
+                <!-- Left column: SVG Dial -->
+                <div class="dial-container">
+                    <svg id="svg-horizontal" viewBox="-200 -200 400 400" preserveAspectRatio="xMidYMid meet" class="sundial-svg"></svg>
+                    <div class="shadow-overlay-message" id="horizontal-shadow-msg">Sole sotto l'orizzonte</div>
+                </div>
+                
+                <!-- Right column: Historical Notes & Real-time Info -->
+                <div class="dial-info-panel-horizontal">
+                    <div class="info-stat">
+                        <span class="info-label">Ora Francese Solare (Apparente)</span>
+                        <span class="info-value text-french" id="horizontal-time-val">12:34:56</span>
+                    </div>
+                    <div class="plaza-historical-content">
+                        <p class="dial-historical-notes">
+                            La <strong>Meridiana Analemmatica Orizzontale</strong> simula una meridiana monumentale incastonata in una piazza pubblica. I punti orari sono disposti su una <strong>circonferenza ellittica</strong> che si allarga o si schiaccia in modo del tutto dinamico al variare della latitudine.
+                        </p>
+                        <p class="dial-historical-notes">
+                            Il gnomone è rappresentato da una <strong>sagoma umana mobile</strong> posizionata al centro. A differenza delle meridiane fisse, l'uomo deve posizionarsi lungo la <strong>scala centrale della declinazione</strong> (la linea Nord-Sud) in base al giorno dell'anno. Le tre zone chiave — il <strong>Solstizio d'Estate ♋</strong> (in alto, 21 Giu), gli <strong>Equinozi ♎/♈</strong> (al centro, 21 Mar / 23 Set) ed il <strong>Solstizio d'Inverno ♑</strong> (in basso, 21 Dic) — si spostano dinamicamente in base alla latitudine.
+                        </p>
+                        <p class="dial-historical-notes">
+                            Quando il Sole splende, il simulatore posiziona automaticamente il gnomone umano sulla scala per la data corrente, proietta l'ombra reale sul pavimento in pietra e traccia un **raggio celeste di lettura** verso l'ellisse oraria. Una **mira di tracciamento bianca e incandescente** scivola lungo la curva ellittica evidenziando l'ora solare esatta.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- STANDALONE SECTION FOR THE 6TH QUADRANT (VERTICAL FRENCH DIAL WITH ANALEMMA) -->
+    <div class="full-width-container" style="margin-top: 1.5rem;">
+        <section class="card card-full-width" id="quadrant-6">
+            <div class="card-glow" style="--accent: var(--color-french)"></div>
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="badge badge-french">Quadrante VI</span>
+                    <h2>Parete Solare (Meridiana Francese Verticale con Lemniscata)</h2>
+                </div>
+                <i data-lucide="sun-medium" class="header-icon icon-french"></i>
+            </div>
+            
+            <div class="card-content-horizontal">
+                <!-- Left column: SVG Dial -->
+                <div class="dial-container">
+                    <svg id="svg-french-vertical" viewBox="-200 -180 400 400" preserveAspectRatio="xMidYMid meet" class="sundial-svg"></svg>
+                    <div class="shadow-overlay-message" id="french-vertical-shadow-msg">Sole dietro la parete</div>
+                </div>
+                
+                <!-- Right column: Historical Notes & Real-time Info -->
+                <div class="dial-info-panel-horizontal">
+                    <div class="info-stat">
+                        <span class="info-label">Ora Francese Apparente (Solare Vera)</span>
+                        <span class="info-value text-french" id="french-vertical-time-val">12:34:56</span>
+                    </div>
+                    <div class="plaza-historical-content">
+                        <p class="dial-historical-notes">
+                            Questa **Meridiana Verticale per le Ore Francesi** rappresenta il classico sistema a ore uguali riferito al mezzogiorno solare locale (l'ora 12:00 solare vera). Disegna con precisione le linee orarie e le curve solstiziali proiettate su una parete con declinazione $D$.
+                        </p>
+                        <p class="dial-historical-notes">
+                            Lungo la linea meridiana delle ore 12:00, è sovrapposta la caratteristica curva a forma di otto tratteggiata chiamata **Lemniscata di correzione dell'orario** (o Analemma). Questa curva compensa lo scostamento causato dall'inclinazione dell'asse terrestre e dall'eccentricità dell'orbita.
+                        </p>
+                        <p class="dial-historical-notes">
+                            Quando l'orologio civile (tempo medio locale) segna esattamente le ore 12:00, la punta dell'ombra dello stilo (il nodus) si proietta con precisione assoluta sulla **Lemniscata tratteggiata**, indicando il mese dell'anno corrente e mostrando visivamente l'equazione del tempo.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer class="app-footer">
+        <p>Progetto realizzato con rigore gnomonico-scientifico. &copy; 2026 KRONOS. Tutti i diritti riservati.</p>
+    </footer>
+
+    <!-- Script principale -->
+    <script src="script.js?v=2.4"></script>
+</body>
+</html>

@@ -1,0 +1,1060 @@
+/* Variables & Design System */
+:root {
+    --color-bg: #06070a;
+    --color-bg-light: #0d0f15;
+    --color-card-dark: #0f1118;
+    --color-card: rgba(16, 20, 30, 0.65);
+    --color-card-border: rgba(255, 255, 255, 0.05);
+    
+    /* Neon Accents for the 4 Systems + Plaza */
+    --color-french: #00f2fe;
+    --color-french-rgb: 0, 242, 254;
+    --color-italic: #f5af19;
+    --color-italic-rgb: 245, 175, 25;
+    --color-babylonian: #11998e;
+    --color-babylonian-rgb: 17, 153, 142;
+    --color-temporary: #d94b36;
+    --color-temporary-rgb: 217, 75, 54;
+
+    /* Text Colors */
+    --text-primary: #f1f3f9;
+    --text-secondary: #909bb0;
+    --text-muted: #5e6b82;
+    
+    /* Sundial Styling Tokens (Premium Cosmic Dark System) */
+    --color-sundial-bg: #07090d; /* deep cosmic black */
+    --stroke-solstice: #ff4757;  /* Neon red-coral */
+    --stroke-equinox: #00db6e;   /* Neon emerald green */
+    --stroke-hour-line: rgba(255, 255, 255, 0.6); /* Highly visible bright off-white */
+    --stroke-hour-line-hover: #ffffff;
+    --stroke-grid: rgba(255, 255, 255, 0.18); /* Visible helper grids */
+}
+
+/* Reset & Global */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--color-bg);
+    color: var(--text-primary);
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    min-height: 100vh;
+    padding: 2.5rem 1.5rem;
+    overflow-x: hidden;
+    position: relative;
+    line-height: 1.5;
+}
+
+/* Cosmic Background Glow */
+.bg-glow {
+    position: absolute;
+    width: 60vw;
+    height: 60vw;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 242, 254, 0.03) 0%, rgba(245, 175, 25, 0.02) 50%, transparent 100%);
+    top: -10%;
+    left: 20%;
+    z-index: -1;
+    pointer-events: none;
+    filter: blur(100px);
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+    background: #202636;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #303950;
+}
+
+/* Header */
+.app-header {
+    max-width: 1300px;
+    margin: 0 auto 2.5rem auto;
+    text-align: center;
+    border-bottom: 1px solid var(--color-card-border);
+    padding-bottom: 1.5rem;
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.sun-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    color: var(--color-italic);
+    filter: drop-shadow(0 0 10px rgba(245, 175, 25, 0.4));
+    animation: rotate-sun 60s linear infinite;
+}
+
+@keyframes rotate-sun {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.logo-text h1 {
+    font-size: 2.25rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, #fff 30%, var(--color-french) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+}
+
+.logo-text span {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: var(--text-muted);
+    display: block;
+    margin-top: 0.25rem;
+}
+
+.header-desc {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    max-width: 800px;
+    margin: 0 auto;
+    font-weight: 300;
+}
+
+/* Main 2x2 Grid Layout for top 4 quadrants */
+.app-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    max-width: 1300px;
+    margin: 0 auto 1.5rem auto;
+}
+
+/* Standalone Horizontal Plaza Dial Layout at bottom */
+.full-width-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.card-full-width {
+    border-radius: 20px;
+}
+
+.card-content-horizontal {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 2.5rem;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.card-full-width .dial-container {
+    max-width: 450px;
+    width: 100%;
+    aspect-ratio: 1.05;
+    margin: 0 auto;
+}
+
+.dial-info-panel-horizontal {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.plaza-historical-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* Cards (Glassmorphism) */
+.card {
+    background: var(--color-card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--color-card-border);
+    border-radius: 20px;
+    padding: 1.75rem;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.card-glow {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(var(--accent), 0.08) 0%, transparent 70%);
+    top: -50px;
+    right: -50px;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.card-title {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.card-title h2 {
+    font-size: 1.35rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.badge {
+    align-self: flex-start;
+    padding: 0.15rem 0.6rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    border-radius: 6px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.badge-french { background: rgba(0, 242, 254, 0.15); color: var(--color-french); border: 1px solid rgba(0, 242, 254, 0.25); }
+.badge-italic { background: rgba(245, 175, 25, 0.15); color: var(--color-italic); border: 1px solid rgba(245, 175, 25, 0.25); }
+.badge-babylonian { background: rgba(17, 153, 142, 0.15); color: var(--color-babylonian); border: 1px solid rgba(17, 153, 142, 0.25); }
+.badge-temporary { background: rgba(217, 75, 54, 0.15); color: var(--color-temporary); border: 1px solid rgba(217, 75, 54, 0.25); }
+
+.header-icon {
+    font-size: 1.5rem;
+    padding: 0.5rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.icon-french { color: var(--color-french); }
+.icon-italic { color: var(--color-italic); }
+.icon-babylonian { color: var(--color-babylonian); }
+.icon-temporary { color: var(--color-temporary); }
+
+.card-content {
+    position: relative;
+    z-index: 1;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* Dividers */
+.divider {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    margin: 0.5rem 0;
+}
+
+/* Forms & Controls */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.form-group label i {
+    width: 0.95rem;
+    height: 0.95rem;
+}
+
+.help-text {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+}
+
+.value-display {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: var(--color-french);
+    background: rgba(0, 242, 254, 0.05);
+    padding: 0.1rem 0.5rem;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 242, 254, 0.1);
+}
+
+.control-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.full-width {
+    grid-column: span 2;
+}
+
+.time-control-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+/* Custom inputs styling */
+input[type="date"],
+input[type="time"] {
+    background: #11141d;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="date"]:focus,
+input[type="time"]:focus {
+    border-color: var(--color-french);
+    box-shadow: 0 0 0 3px rgba(0, 242, 254, 0.1);
+}
+
+/* Styled Range Sliders */
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #191f2e;
+    outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--color-french);
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(0, 242, 254, 0.5);
+    transition: transform 0.1s;
+}
+
+.slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+/* Sliders specific thumbs */
+#input-dec::-webkit-slider-thumb { background: var(--text-primary); box-shadow: 0 0 8px rgba(255, 255, 255, 0.4); }
+
+/* Preset Buttons */
+.preset-buttons {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.4rem;
+}
+
+.dec-preset-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+}
+
+.btn {
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--text-secondary);
+    border-radius: 8px;
+    padding: 0.4rem 0.25rem;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-primary);
+}
+
+.btn-preset.active {
+    background: rgba(0, 242, 254, 0.1);
+    color: var(--color-french);
+    border-color: rgba(0, 242, 254, 0.3);
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.1);
+}
+
+.btn-dec-preset {
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.01);
+    color: var(--text-secondary);
+    border-radius: 6px;
+    padding: 0.35rem 0.2rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.btn-dec-preset:hover {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-primary);
+}
+
+.btn-dec-preset.active {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-gps {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: rgba(0, 242, 254, 0.06);
+    border: 1px solid rgba(0, 242, 254, 0.15);
+    color: var(--color-french);
+    font-weight: 600;
+    padding: 0.55rem 0.75rem;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-gps:hover:not(:disabled) {
+    background: rgba(0, 242, 254, 0.12);
+    border-color: rgba(0, 242, 254, 0.35);
+    box-shadow: 0 0 12px rgba(0, 242, 254, 0.15);
+}
+
+.btn-gps:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.btn-gps:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+}
+
+
+/* Checkboxes */
+.checkbox-group {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 0.25rem;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding-left: 28px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    user-select: none;
+    color: var(--text-secondary);
+}
+
+.checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 18px;
+    width: 18px;
+    background-color: #191f2e;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.checkbox-container:hover input ~ .checkmark {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.checkbox-container input:checked ~ .checkmark {
+    background-color: var(--color-french);
+    border-color: var(--color-french);
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.checkbox-container input:checked ~ .checkmark:after {
+    display: block;
+}
+
+.checkbox-container .checkmark:after {
+    left: 6px;
+    top: 2px;
+    width: 4px;
+    height: 8px;
+    border: solid black;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.play-icon {
+    width: 0.85rem;
+    height: 0.85rem;
+    margin-left: 0.2rem;
+}
+
+.inline-icon {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Analog & Solar Telemetry Section */
+.clock-telemetry-container {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 1rem;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.mechanical-clock-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Elegant French Analog Clock */
+.analog-clock {
+    position: relative;
+    width: 105px;
+    height: 105px;
+    border-radius: 50%;
+    background: #0b0d14;
+    border: 2px solid rgba(0, 242, 254, 0.15);
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.05), inset 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+.clock-face {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.center-nut {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-french);
+    box-shadow: 0 0 6px var(--color-french);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+
+.hand {
+    position: absolute;
+    left: 50%;
+    bottom: 50%;
+    border-radius: 4px;
+    transform-origin: bottom center;
+    transform: rotate(0deg);
+}
+
+.hour-hand {
+    width: 3px;
+    height: 28px;
+    background: var(--text-primary);
+    margin-left: -1.5px;
+    z-index: 5;
+}
+
+.minute-hand {
+    width: 2px;
+    height: 38px;
+    background: var(--color-french);
+    margin-left: -1px;
+    z-index: 6;
+}
+
+.second-hand {
+    width: 0.8px;
+    height: 42px;
+    background: #ff4757;
+    margin-left: -0.4px;
+    z-index: 7;
+}
+
+.clock-number {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    font-size: 0.55rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    padding: 3px;
+    transform: rotate(calc(var(--i) * 30deg));
+}
+
+/* Telemetry display */
+.solar-telemetry h3 {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    border-left: 2px solid var(--color-french);
+    padding-left: 0.4rem;
+}
+
+.telemetry-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.4rem;
+}
+
+.telemetry-item {
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid rgba(255, 255, 255, 0.015);
+    border-radius: 6px;
+    padding: 0.3rem 0.5rem;
+}
+
+.tel-label {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.tel-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.text-french { color: var(--color-french); text-shadow: 0 0 5px rgba(0, 242, 254, 0.2); }
+.text-italic { color: var(--color-italic); text-shadow: 0 0 5px rgba(245, 175, 25, 0.2); }
+.text-babylonian { color: var(--color-babylonian); text-shadow: 0 0 5px rgba(17, 153, 142, 0.2); }
+.text-temporary { color: var(--color-temporary); text-shadow: 0 0 5px rgba(217, 75, 54, 0.2); }
+
+/* WIDGET LEMNISCATA / ANALEMMA */
+.analemma-container {
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    padding: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.analemma-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.analemma-icon {
+    width: 1.1rem;
+    height: 1.1rem;
+    color: var(--color-french);
+    filter: drop-shadow(0 0 5px rgba(0, 242, 254, 0.4));
+}
+
+.analemma-header h3 {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+}
+
+.analemma-wrapper {
+    width: 100%;
+    height: 140px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #07090d;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    overflow: hidden;
+    padding: 0.25rem;
+}
+
+.analemma-svg {
+    width: 100%;
+    height: 100%;
+}
+
+.analemma-footer {
+    display: block;
+    text-align: center;
+    margin-top: 0.4rem;
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* Analemma SVG Elements */
+.analemma-svg .analemma-grid {
+    stroke: rgba(255, 255, 255, 0.03);
+    stroke-width: 0.5;
+}
+
+.analemma-svg .analemma-grid-active {
+    stroke: rgba(255, 255, 255, 0.08);
+    stroke-width: 0.75;
+    stroke-dasharray: 2 3;
+}
+
+.analemma-svg .analemma-axis-label {
+    font-size: 5px;
+    fill: var(--text-muted);
+}
+
+.analemma-svg .analemma-curve {
+    fill: none;
+    stroke: rgba(0, 242, 254, 0.3);
+    stroke-width: 1.25;
+}
+
+.analemma-svg .analemma-point {
+    fill: #ffffff;
+    stroke: var(--color-french);
+    stroke-width: 1.5;
+    filter: drop-shadow(0 0 4px var(--color-french));
+}
+
+.analemma-svg .analemma-month-label {
+    font-size: 5.5px;
+    fill: var(--text-muted);
+    font-weight: 500;
+}
+
+/* Sundial Canvas Container */
+.dial-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1.05;
+    background: var(--color-sundial-bg);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dial-card .dial-container {
+    max-width: 420px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.sundial-svg {
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.3s;
+}
+
+/* Shadows overlay message (Sun behind wall) */
+.shadow-overlay-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(6, 7, 10, 0.85);
+    border: 1px dashed rgba(255, 255, 255, 0.15);
+    color: var(--text-secondary);
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    pointer-events: none;
+    z-index: 10;
+    display: none; /* Controlled in JS */
+    animation: pulse-border 2s infinite ease-in-out;
+}
+
+@keyframes pulse-border {
+    0% { border-color: rgba(255, 255, 255, 0.15); }
+    50% { border-color: rgba(255, 255, 255, 0.4); }
+    100% { border-color: rgba(255, 255, 255, 0.15); }
+}
+
+/* SVG Sundial Lines styling */
+.sundial-svg .dial-border {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.08);
+    stroke-width: 2;
+}
+
+.sundial-svg .substyle-line {
+    stroke: rgba(255, 255, 255, 0.08);
+    stroke-width: 1;
+    stroke-dasharray: 2 4;
+}
+
+.sundial-svg .declination-line {
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+}
+
+.sundial-svg .solstice-summer { stroke: var(--stroke-solstice); opacity: 0.75; }
+.sundial-svg .solstice-winter { stroke: #00a8ff; opacity: 0.85; }
+.sundial-svg .equinox-line { stroke: var(--stroke-equinox); opacity: 0.85; }
+
+.sundial-svg .hour-line {
+    fill: none;
+    stroke: var(--stroke-hour-line);
+    stroke-width: 1.25;
+    stroke-linecap: round;
+    transition: stroke-width 0.2s, stroke 0.2s;
+}
+
+.sundial-svg .hour-line:hover {
+    stroke: var(--stroke-hour-line-hover);
+    stroke-width: 2;
+    cursor: pointer;
+}
+
+.sundial-svg .shadow-ray {
+    stroke: rgba(255, 255, 255, 0.35); /* Elegant light dashed ray */
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 2 3;
+}
+
+.sundial-svg .shadow-dot-blur {
+    fill: rgba(0, 0, 0, 0.7);
+    filter: blur(3px);
+}
+
+.sundial-svg .shadow-dot {
+    fill: #ffffff; /* Neon white sharp nodus shadow dot */
+    filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.35));
+}
+
+.sundial-svg .gnomon-base {
+    fill: var(--color-sundial-bg);
+    stroke: #ffffff;
+    stroke-width: 1.5;
+}
+
+.sundial-svg .gnomon-base-dot {
+    fill: #ff4757;
+}
+
+.sundial-svg .label-text {
+    font-size: 7.5px;
+    font-weight: 700;
+    fill: var(--text-secondary);
+    text-anchor: middle;
+    pointer-events: none;
+}
+
+.sundial-svg .hour-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    font-weight: 600;
+    fill: var(--text-primary);
+    pointer-events: none;
+}
+
+.sundial-svg .axis-text {
+    font-size: 6px;
+    font-weight: 500;
+    fill: var(--text-muted);
+}
+
+/* Horizontal Pavement Plaza Specific SVG */
+.sundial-svg .pavement-ring {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.08); /* Faint space-gray stone rings */
+    stroke-width: 1.25;
+}
+
+.sundial-svg .pavement-grid {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.04);
+    stroke-width: 0.75;
+}
+
+.sundial-svg .human-gnomon-figure {
+    fill: #ffffff; /* Premium white human silhouette */
+    stroke: rgba(255, 255, 255, 0.6);
+    stroke-width: 1;
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.45));
+}
+
+.sundial-svg .human-shadow-silhouette {
+    fill: rgba(236, 230, 220, 0.55); /* Beautiful beige travertine shadow (#ece6dc) */
+    stroke: rgba(236, 230, 220, 0.15);
+    stroke-width: 0.5;
+    filter: blur(2.5px);
+    opacity: 0.85;
+    transform-origin: 0 100px; /* Pivots at gnomon feet */
+}
+
+.sundial-svg .cardinal-marker {
+    font-size: 9px;
+    font-weight: 800;
+    fill: var(--text-secondary);
+    text-anchor: middle;
+    pointer-events: none;
+    letter-spacing: 0.5px;
+}
+
+.sundial-svg .cardinal-marker-north {
+    fill: #d94b36; /* Red North marker */
+}
+
+/* Dial details card */
+.dial-info-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: 0.25rem;
+}
+
+.info-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    padding: 0.5rem 0.8rem;
+}
+
+.info-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.info-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.dial-historical-notes {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    font-weight: 300;
+}
+
+.dial-historical-notes strong {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* Footer */
+.app-footer {
+    max-width: 1300px;
+    margin: 2.5rem auto 0 auto;
+    text-align: center;
+    border-top: 1px solid var(--color-card-border);
+    padding-top: 1.5rem;
+}
+
+.app-footer p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Responsive Grid Adaptation */
+@media (max-width: 1100px) {
+    .app-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .card-content-horizontal {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    .preset-buttons {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    #btn-custom {
+        grid-column: span 2;
+    }
+}
+
+@keyframes spin-loader {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
