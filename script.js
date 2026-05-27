@@ -14,7 +14,7 @@ let state = {
     isAnimating: false, // Time animation active
     gnomonLength: 85,   // Length of perpendicular gnomon in pixels (height of nodus)
     humanHeight: 75,    // Height of the human gnomon on the horizontal sundial
-    animationSpeed: 120, // Minutes incremented per second in animation (four times faster)
+    animationSpeed: 30, // Default animation speed (minutes advanced per second)
     lastFrameTime: null
 };
 
