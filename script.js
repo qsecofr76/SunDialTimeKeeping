@@ -14,7 +14,7 @@ let state = {
     isAnimating: false, // Time animation active
     gnomonLength: 85,   // Length of perpendicular gnomon in pixels (height of nodus)
     humanHeight: 75,    // Height of the human gnomon on the horizontal sundial
-    animationSpeed: 30, // Minutes incremented per second in animation
+    animationSpeed: 120, // Minutes incremented per second in animation (four times faster)
     lastFrameTime: null
 };
 
@@ -393,19 +393,21 @@ function update() {
     else decStr += " (Est)";
     el.decVal.innerText = decStr;
     
-    // Parse selected date and time
-    const [hStr, mStr] = state.timeString.split(':');
-    const selectedDate = new Date(el.dateInput.value);
-    selectedDate.setHours(parseInt(hStr), parseInt(mStr), 0);
-    state.date = selectedDate;
+    // Parse selected date and time (only if NOT animating to avoid losing fractional seconds)
+    if (!state.isAnimating) {
+        const [hStr, mStr] = state.timeString.split(':');
+        const selectedDate = new Date(el.dateInput.value);
+        selectedDate.setHours(parseInt(hStr), parseInt(mStr), 0);
+        state.date = selectedDate;
+    }
     
     // 2. Astronomy Engine Calculations
     const dayOfYear = getDayOfYear(state.date);
     const solarDec = calcSolarDeclination(dayOfYear);
     const eot = calcEquationOfTime(dayOfYear);
     
-    // Local Civil Time in decimal hours (T_civil)
-    const tCivil = selectedDate.getHours() + selectedDate.getMinutes() / 60 + selectedDate.getSeconds() / 3600;
+    // Local Civil Time in decimal hours (T_civil) with high-precision seconds and milliseconds
+    const tCivil = state.date.getHours() + state.date.getMinutes() / 60 + state.date.getSeconds() / 3600 + state.date.getMilliseconds() / 3600000;
     
     // Local Apparent Solar Time (T_solar)
     const dstCorrection = state.dst ? 1.0 : 0.0;
@@ -484,9 +486,9 @@ function update() {
     el.eotVal.innerText = `${eot >= 0 ? '+' : '-'}${eotMin}m ${eotSec}s`;
     
     // 3. Update French Analog Clock
-    const sDeg = selectedDate.getSeconds() * 6;
-    const mDeg = selectedDate.getMinutes() * 6 + selectedDate.getSeconds() * 0.1;
-    const hDeg = (selectedDate.getHours() % 12) * 30 + selectedDate.getMinutes() * 0.5;
+    const sDeg = state.date.getSeconds() * 6;
+    const mDeg = state.date.getMinutes() * 6 + state.date.getSeconds() * 0.1;
+    const hDeg = (state.date.getHours() % 12) * 30 + state.date.getMinutes() * 0.5;
     
     el.frenchHourHand.style.transform = `rotate(${hDeg}deg)`;
     el.frenchMinHand.style.transform = `rotate(${mDeg}deg)`;
@@ -1092,18 +1094,19 @@ function animationLoop(timestamp) {
     const deltaMs = timestamp - state.lastFrameTime;
     state.lastFrameTime = timestamp;
     
+    // Advance state.date using high-precision milliseconds
     const minutesToAdvance = (state.animationSpeed * deltaMs) / 1000;
+    state.date.setTime(state.date.getTime() + minutesToAdvance * 60 * 1000);
     
-    const [hStr, mStr] = el.timeInput.value.split(':');
-    let totalMinutes = parseInt(hStr) * 60 + parseInt(mStr) + minutesToAdvance;
+    // Sync back to DOM inputs to show the ticking clock correctly
+    const year = state.date.getFullYear();
+    const month = String(state.date.getMonth() + 1).padStart(2, '0');
+    const day = String(state.date.getDate()).padStart(2, '0');
+    el.dateInput.value = `${year}-${month}-${day}`;
     
-    totalMinutes = (totalMinutes + 1440) % 1440;
-    
-    const nextH = Math.floor(totalMinutes / 60);
-    const nextM = Math.floor(totalMinutes % 60);
-    
-    const nextTimeString = `${String(nextH).padStart(2, '0')}:${String(nextM).padStart(2, '0')}`;
-    el.timeInput.value = nextTimeString;
+    const hours = String(state.date.getHours()).padStart(2, '0');
+    const minutes = String(state.date.getMinutes()).padStart(2, '0');
+    el.timeInput.value = `${hours}:${minutes}`;
     
     update();
     
