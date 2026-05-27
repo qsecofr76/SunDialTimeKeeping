@@ -98,20 +98,91 @@ function getDayOfYear(date) {
     return Math.floor(diff / oneDay);
 }
 
+function calcMeanObliquityOfEcliptic(t) {
+    const seconds = 21.448 - t * (46.8150 + t * (0.00059 - t * 0.001813));
+    return 23.0 + (26.0 + (seconds / 60.0)) / 60.0;
+}
+
+function calcObliquityCorrection(t) {
+    const e0 = calcMeanObliquityOfEcliptic(t);
+    const omega = 125.04 - 1934.136 * t;
+    return e0 + 0.00256 * Math.cos(degToRad(omega));
+}
+
+function getJulianCenturies(input) {
+    let date;
+    if (input instanceof Date) {
+        date = input;
+    } else {
+        const year = (typeof state !== 'undefined' && state && state.date) ? state.date.getFullYear() : new Date().getFullYear();
+        date = new Date(Date.UTC(year, 0, 1, 12, 0, 0));
+        date.setUTCDate(input);
+    }
+    const epoch = 946728000000; // Date.UTC(2000, 0, 1, 12, 0, 0)
+    return (date.getTime() - epoch) / 3155760000000;
+}
+
 // Solar Declination (\delta) in Radians
-function calcSolarDeclination(dayOfYear) {
-    const angle = degToRad(360 / 365 * (dayOfYear - 80));
-    return degToRad(23.44) * Math.sin(angle);
+function calcSolarDeclination(input) {
+    const t = getJulianCenturies(input);
+
+    let L0 = 280.46646 + t * (36000.76983 + t * 0.0003032);
+    L0 = L0 % 360;
+    if (L0 < 0) L0 += 360;
+
+    let M = 357.52911 + t * (35999.05029 - 0.0001537 * t);
+    M = M % 360;
+    if (M < 0) M += 360;
+
+    const MRad = degToRad(M);
+    const C = (1.914602 - t * (0.004817 + 0.000014 * t)) * Math.sin(MRad) +
+              (0.019993 - 0.000101 * t) * Math.sin(2 * MRad) +
+              0.000289 * Math.sin(3 * MRad);
+
+    const trueLong = L0 + C;
+    const omega = 125.04 - 1934.136 * t;
+    const apparentLong = trueLong - 0.00569 - 0.00478 * Math.sin(degToRad(omega));
+
+    const epsilon = calcObliquityCorrection(t);
+    const epsRad = degToRad(epsilon);
+
+    return Math.asin(Math.sin(epsRad) * Math.sin(degToRad(apparentLong)));
 }
 
 // Equation of Time (EoT) in Minutes
-function calcEquationOfTime(dayOfYear) {
-    const B = degToRad(360 / 365 * (dayOfYear - 81));
-    return 9.87 * Math.sin(2 * B) - 7.53 * Math.cos(B) - 1.5 * Math.sin(B);
+function calcEquationOfTime(input) {
+    const t = getJulianCenturies(input);
+
+    let L0 = 280.46646 + t * (36000.76983 + t * 0.0003032);
+    L0 = L0 % 360;
+    if (L0 < 0) L0 += 360;
+
+    let M = 357.52911 + t * (35999.05029 - 0.0001537 * t);
+    M = M % 360;
+    if (M < 0) M += 360;
+
+    const e = 0.016708634 - t * (0.000042037 + 0.0000001267 * t);
+
+    const epsilon = calcObliquityCorrection(t);
+    const epsRad = degToRad(epsilon);
+    const y = Math.tan(epsRad / 2) ** 2;
+
+    const L0Rad = degToRad(L0);
+    const MRad = degToRad(M);
+
+    const eqTime = 4 * radToDeg(
+        y * Math.sin(2 * L0Rad) -
+        2 * e * Math.sin(MRad) +
+        4 * e * y * Math.sin(MRad) * Math.cos(2 * L0Rad) -
+        0.5 * y * y * Math.sin(4 * L0Rad) -
+        1.25 * e * e * Math.sin(2 * MRad)
+    );
+
+    return eqTime; // in minutes
 }
 
 // Calculate Sun position in horizontal coordinates (Altitude, Azimuth)
-// Azimuth is 0 at North, positive West, negative East (counter-clockwise)
+// Azimuth is 0 at North, positive East (clockwise N -> E -> S -> W)
 function getSolarCoordinates(hRad, latRad, decRad) {
     const sinAlt = Math.sin(latRad) * Math.sin(decRad) + Math.cos(latRad) * Math.cos(decRad) * Math.cos(hRad);
     const altRad = Math.asin(Math.max(-1, Math.min(1, sinAlt)));
@@ -120,12 +191,13 @@ function getSolarCoordinates(hRad, latRad, decRad) {
     let aziRad = 0;
     
     if (cosAlt > 0.0001) {
-        const sinAzi = (Math.cos(decRad) * Math.sin(hRad)) / cosAlt;
+        const sinAzi = -(Math.cos(decRad) * Math.sin(hRad)) / cosAlt;
         const cosAzi = (Math.sin(decRad) - Math.sin(latRad) * sinAlt) / (Math.cos(latRad) * cosAlt);
         aziRad = Math.atan2(sinAzi, cosAzi);
     } else {
         aziRad = hRad;
     }
+    if (aziRad < 0) aziRad += 2 * Math.PI;
     return { alt: altRad, azi: aziRad };
 }
 
@@ -135,7 +207,7 @@ function getSolarCoordinates(hRad, latRad, decRad) {
 function getShadowCoordinates(altRad, aziRad, decMuroRad, a) {
     // 3D Solar unit vector in South-East-Zenith horizontal coordinate system:
     const sSouth = -Math.cos(altRad) * Math.cos(aziRad);
-    const sEast = -Math.cos(altRad) * Math.sin(aziRad);
+    const sEast = Math.cos(altRad) * Math.sin(aziRad);
     const sZenith = Math.sin(altRad);
     
     // Project the sun's vector onto the wall basis:
@@ -162,7 +234,7 @@ function getShadowCoordinates(altRad, aziRad, decMuroRad, a) {
 // Uses direct 3D vector rotation for bulletproof precision
 function getHorizontalShadowCoordinates(altRad, aziRad, a) {
     const sSouth = -Math.cos(altRad) * Math.cos(aziRad);
-    const sEast = -Math.cos(altRad) * Math.sin(aziRad);
+    const sEast = Math.cos(altRad) * Math.sin(aziRad);
     const sZenith = Math.sin(altRad);
     
     if (sZenith <= 0.001) {
@@ -174,14 +246,12 @@ function getHorizontalShadowCoordinates(altRad, aziRad, a) {
     
     return { x, y, visible: true };
 }
-
 // Convert apparent solar time (0-24) to civil time (0-24)
 function solarToCivil(tSolar, dst, eot, lng, tz) {
     const dstOffset = dst ? 1 : 0;
     const lngCorrection = 4 * (lng - 15 * tz) / 60; // in hours
-    return tSolar - dstOffset - lngCorrection - (eot / 60);
+    return tSolar + dstOffset - lngCorrection - (eot / 60);
 }
-
 // Format fractional hours into HH:MM:SS
 function formatTime(hoursDecimal) {
     let h = Math.floor(hoursDecimal);
@@ -405,9 +475,8 @@ function update() {
     }
     
     // 2. Astronomy Engine Calculations
-    const dayOfYear = getDayOfYear(state.date);
-    const solarDec = calcSolarDeclination(dayOfYear);
-    const eot = calcEquationOfTime(dayOfYear);
+    const solarDec = calcSolarDeclination(state.date);
+    const eot = calcEquationOfTime(state.date);
     
     // Local Civil Time in decimal hours (T_civil) with high-precision seconds and milliseconds
     const tCivil = state.date.getHours() + state.date.getMinutes() / 60 + state.date.getSeconds() / 3600 + state.date.getMilliseconds() / 3600000;
@@ -427,8 +496,9 @@ function update() {
     const latRad = degToRad(state.lat);
     const { alt: altRad, azi: aziRad } = getSolarCoordinates(hRad, latRad, solarDec);
     
-    // Sunrise and Sunset
-    const cosHSS = -Math.tan(latRad) * Math.tan(solarDec);
+    // Sunrise and Sunset (incorporating atmospheric refraction and solar semidiameter correction = -0.833 degrees)
+    const sinH0 = Math.sin(degToRad(-0.833));
+    const cosHSS = (sinH0 - Math.sin(latRad) * Math.sin(solarDec)) / (Math.cos(latRad) * Math.cos(solarDec));
     let hSunsetRad = 0;
     let polarState = "normal";
     
@@ -454,20 +524,19 @@ function update() {
     el.solarDecVal.innerText = `${solarDec >= 0 ? '+' : ''}${radToDeg(solarDec).toFixed(1)}°`;
     el.solarAltVal.innerText = altRad > 0 ? `${radToDeg(altRad).toFixed(1)}°` : 'Sotto l\'orizzonte';
     
-    // Azimuth Display
-    let aziCardinal = 'S';
+    // Azimuth Display (Standard Clockwise from North, 0 to 360 degrees)
+    let aziCardinal = 'N';
     const aziDeg = radToDeg(aziRad);
-    if (aziDeg < -157.5 || aziDeg > 157.5) aziCardinal = 'N';
-    else if (aziDeg < -112.5) aziCardinal = 'NE';
-    else if (aziDeg < -67.5) aziCardinal = 'E';
-    else if (aziDeg < -22.5) aziCardinal = 'SE';
-    else if (aziDeg < 22.5) aziCardinal = 'S';
-    else if (aziDeg < 67.5) aziCardinal = 'SO';
-    else if (aziDeg < 112.5) aziCardinal = 'O';
+    if (aziDeg >= 337.5 || aziDeg < 22.5) aziCardinal = 'N';
+    else if (aziDeg >= 22.5 && aziDeg < 67.5) aziCardinal = 'NE';
+    else if (aziDeg >= 67.5 && aziDeg < 112.5) aziCardinal = 'E';
+    else if (aziDeg >= 112.5 && aziDeg < 157.5) aziCardinal = 'SE';
+    else if (aziDeg >= 157.5 && aziDeg < 202.5) aziCardinal = 'S';
+    else if (aziDeg >= 202.5 && aziDeg < 247.5) aziCardinal = 'SO';
+    else if (aziDeg >= 247.5 && aziDeg < 292.5) aziCardinal = 'O';
     else aziCardinal = 'NO';
-    // Format to 0-360 standard for display
-    const dispAzi = (aziDeg + 360) % 360;
-    el.solarAziVal.innerText = `${dispAzi.toFixed(1)}° (${aziCardinal})`;
+    
+    el.solarAziVal.innerText = `${aziDeg.toFixed(1)}° (${aziCardinal})`;
     
     // Sunrise/Sunset readouts
     if (polarState === "polar_day") {
@@ -752,8 +821,7 @@ function renderHorizontalSundial(svgElement, msgElement, shadowSVG) {
     html += `<text x="9" y="${(100 - yWinter + 2.5).toFixed(1)}" style="font-size: 5.5px; font-weight: 700; fill: #00a8ff; font-family: inherit;" text-anchor="start">Solstizio Inverno (21 Dic) ♑</text>`;
     
     // 5. Dynamic Human Gnomon Positioning
-    const dayOfYear = getDayOfYear(state.date);
-    const solarDec = calcSolarDeclination(dayOfYear);
+    const solarDec = calcSolarDeclination(state.date);
     const yGnomon = A * Math.tan(solarDec) * Math.cos(latRad);
     const gnomonY = 100 - yGnomon;
     
