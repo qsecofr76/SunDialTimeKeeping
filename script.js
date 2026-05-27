@@ -773,14 +773,7 @@ function renderHorizontalSundial(svgElement, msgElement, shadowSVG) {
         const angleRad = Math.atan2(tipY - gnomonY, tipX);
         const angleDeg = radToDeg(angleRad);
         
-        // Draw the beautiful, semi-transparent beige human shadow silhouette pivoting from the feet
-        if (length > 2) {
-            const humanShadowPath = `M -2.5,0 C -3.5,-25 -4.5,-45 -6.5,-47 C -8,-48 -7.5,-58 -5,-62 C -2,-64 -1.5,-68 0,-68 C 1.5,-68 2,-64 5,-62 C 7.5,-58 8,-48 6.5,-47 C 4.5,-45 3.5,-25 2.5,0 Z`;
-            html += `<g transform="translate(0, ${gnomonY.toFixed(1)}) rotate(${angleDeg - 90}) scale(1.5, ${length / 68})" class="human-shadow-silhouette">
-                        <path d="${humanShadowPath}" />
-                        <circle cx="0" cy="-66" r="5.5" />
-                     </g>`;
-        }
+
         
         // Draw an elegant, thin, glowing dashed golden/cyan reading ray extending from the gnomon's feet all the way out
         const rayLength = 220;
