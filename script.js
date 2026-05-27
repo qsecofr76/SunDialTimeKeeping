@@ -37,6 +37,9 @@ const el = {
     timeInput: document.getElementById('input-time'),
     dstInput: document.getElementById('input-dst'),
     animateInput: document.getElementById('input-animate'),
+    speedInput: document.getElementById('input-speed'),
+    speedVal: document.getElementById('speed-val'),
+    speedContainer: document.getElementById('speed-control-container'),
     
     latVal: document.getElementById('lat-val'),
     lngVal: document.getElementById('lng-val'),
@@ -1080,10 +1083,17 @@ function initEvents() {
     // Animation Loop handling
     el.animateInput.addEventListener('change', (e) => {
         state.isAnimating = e.target.checked;
+        toggleSpeedControl();
         if (state.isAnimating) {
             state.lastFrameTime = performance.now();
             requestAnimationFrame(animationLoop);
         }
+    });
+    
+    // Animation Speed input listener
+    el.speedInput.addEventListener('input', () => {
+        state.animationSpeed = parseFloat(el.speedInput.value);
+        el.speedVal.innerText = `${state.animationSpeed}m/s`;
     });
 }
 
@@ -1122,6 +1132,15 @@ function toggleGpsButton() {
     }
 }
 
+// Toggle visibility of speed control slider based on active animation
+function toggleSpeedControl() {
+    if (el.animateInput.checked) {
+        el.speedContainer.style.display = 'block';
+    } else {
+        el.speedContainer.style.display = 'none';
+    }
+}
+
 // ==========================================
 // APPLICATION INITIALIZATION
 // ==========================================
@@ -1151,6 +1170,7 @@ function init() {
     // 3. Bind Event listeners
     initEvents();
     toggleGpsButton();
+    toggleSpeedControl();
     
     // 4. Initial calculations & drawing loop
     update();
