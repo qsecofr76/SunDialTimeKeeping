@@ -960,7 +960,6 @@ input[type="time"]:focus {
     stroke-width: 0.5;
     filter: blur(2.5px);
     opacity: 0.85;
-    transform-origin: 0 100px; /* Pivots at gnomon feet */
 }
 
 .sundial-svg .cardinal-marker {
