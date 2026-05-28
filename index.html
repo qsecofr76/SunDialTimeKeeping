@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="style.css?v=2.8">
+    <link rel="stylesheet" href="style.css?v=3.1">
 </head>
 <body>
     <div class="bg-glow"></div>
@@ -39,7 +39,13 @@
                     <span class="badge badge-french">Pannello Controllo</span>
                     <h2>Ora Civile & Parametri</h2>
                 </div>
-                <i data-lucide="sliders" class="header-icon icon-french"></i>
+                <div class="header-action-group">
+                    <button class="btn-toggle-controls" id="btn-toggle-controls" type="button" aria-label="Espandi o comprimi controlli">
+                        <i data-lucide="chevron-up"></i>
+                        <span>Comprimi</span>
+                    </button>
+                    <i data-lucide="sliders" class="header-icon icon-french"></i>
+                </div>
             </div>
             
             <div class="card-content">
@@ -372,6 +378,6 @@
     </footer>
 
     <!-- Script principale -->
-    <script src="script.js?v=3.0"></script>
+    <script src="script.js?v=3.1"></script>
 </body>
 </html>

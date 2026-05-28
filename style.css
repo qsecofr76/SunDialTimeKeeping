@@ -263,6 +263,16 @@ body {
 .icon-babylonian { color: var(--color-babylonian); }
 .icon-temporary { color: var(--color-temporary); }
 
+.header-action-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.btn-toggle-controls {
+    display: none; /* Hidden by default on desktop */
+}
+
 .card-content {
     position: relative;
     z-index: 1;
@@ -1040,15 +1050,105 @@ input[type="time"]:focus {
 }
 
 @media (max-width: 768px) {
+    body {
+        padding: 1.25rem 0.75rem;
+    }
+    .card {
+        padding: 1.25rem;
+    }
+    .app-header {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+    }
+    .logo-text h1 {
+        font-size: 1.75rem;
+    }
+    .logo-text span {
+        letter-spacing: 2px;
+    }
+    .header-desc {
+        font-size: 0.85rem;
+    }
+    .app-grid {
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    .full-width-container {
+        margin-bottom: 1rem;
+    }
     .card-content-horizontal {
         grid-template-columns: 1fr;
         gap: 1.5rem;
     }
+    
+    /* Optimized Grid for preset buttons on mobile (2 columns) */
     .preset-buttons {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
     }
     #btn-custom {
         grid-column: span 2;
+    }
+    
+    /* Toggle Button Styles for Collapsible Dashboard Controls */
+    .btn-toggle-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        color: var(--color-french);
+        font-family: inherit;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.4rem 0.75rem;
+        cursor: pointer;
+        transition: all 0.25s ease;
+    }
+    
+    .btn-toggle-controls:hover {
+        background: rgba(var(--color-french-rgb), 0.12);
+        border-color: rgba(var(--color-french-rgb), 0.25);
+    }
+    
+    .btn-toggle-controls i {
+        width: 14px;
+        height: 14px;
+    }
+
+    /* Beautiful Collapsing Slide Transition */
+    .control-card.collapsed .card-content {
+        max-height: 0;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+        opacity: 0;
+        pointer-events: none;
+        transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                    opacity 0.25s ease, 
+                    padding 0.4s ease, 
+                    margin 0.4s ease;
+    }
+    
+    .control-card .card-content {
+        max-height: 2200px;
+        opacity: 1;
+        transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1), 
+                    opacity 0.4s ease, 
+                    padding 0.6s ease, 
+                    margin 0.6s ease;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Stack declination buttons vertically on very small mobile phones */
+    .dec-preset-buttons {
+        grid-template-columns: 1fr;
+        gap: 0.35rem;
+    }
+    .dec-preset-buttons button {
+        padding: 0.5rem;
+        font-size: 0.75rem;
     }
 }
 

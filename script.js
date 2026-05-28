@@ -1233,6 +1233,30 @@ function init() {
     toggleGpsButton();
     toggleSpeedControl();
     
+    // Collapsible controls toggle logic for small screen vertical mobile devices
+    const toggleBtn = document.getElementById('btn-toggle-controls');
+    const controlCard = document.getElementById('quadrant-1');
+    if (toggleBtn && controlCard) {
+        toggleBtn.addEventListener('click', () => {
+            const isCollapsed = controlCard.classList.toggle('collapsed');
+            toggleBtn.innerHTML = isCollapsed ? 
+                `<i data-lucide="chevron-down"></i><span>Espandi</span>` : 
+                `<i data-lucide="chevron-up"></i><span>Comprimi</span>`;
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        });
+        
+        // Collapse by default on small vertical cell phone screens (< 500px)
+        if (window.innerWidth < 500) {
+            controlCard.classList.add('collapsed');
+            toggleBtn.innerHTML = `<i data-lucide="chevron-down"></i><span>Espandi</span>`;
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        }
+    }
+    
     // 4. Initial calculations & drawing loop
     update();
 }
